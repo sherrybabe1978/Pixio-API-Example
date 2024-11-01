@@ -78,8 +78,8 @@ function Txt2img() {
             if (loading) return;
             setLoading(true);
 
-            const promises = Array(4).fill(null).map(() => {
-              return generate(positivePrompt, negativePrompt)
+            const promises = Array(1).fill(null).map(() => {
+              return generate(positivePrompt)
                 .then((res) => {
                   if (res) {
                     setRunIds((ids) => [...ids, res.run_id]);
