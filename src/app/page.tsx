@@ -55,6 +55,7 @@ export default function Page() {
 function Txt2img() {
   const [positivePrompt, setPositivePrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("");
+  const [seed, setSeed] = useState("");
   const [loading, setLoading] = useState(false);
   const [runIds, setRunIds] = useState<string[]>([]);
 
@@ -79,7 +80,7 @@ function Txt2img() {
             setLoading(true);
 
             const promises = Array(1).fill(null).map(() => {
-              return generate(positivePrompt)
+              return generate(positivePrompt, seed)
                 .then((res) => {
                   if (res) {
                     setRunIds((ids) => [...ids, res.run_id]);
@@ -110,6 +111,13 @@ function Txt2img() {
               value={negativePrompt}
               onChange={(e) => setNegativePrompt(e.target.value)}
             />
+            <Label htmlFor="seed">Seed</Label>
+            <Input
+              id="seed"
+              type="text"
+              value={seed}
+              onChange={(e) => setSeed(e.target.value)}
+            />
             <Button type="submit" className="flex gap-2" disabled={loading}>
               Generate {loading && <LoadingIcon />}
             </Button>
@@ -127,6 +135,7 @@ function Txt2img() {
 
 function Img2img() {
   const [prompt, setPrompt] = useState<File>();
+  const [seed, setSeed] = useState("");
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const [runId, setRunId] = useState("");
@@ -191,7 +200,7 @@ function Img2img() {
                   setStatus("uploaded input");
 
                   setLoading(true);
-                  generate_img(res.download_url).then((res) => {
+                  generate_img(res.download_url, seed).then((res) => {
                     console.log(res);
                     if (!res) {
                       setStatus("error");
@@ -208,6 +217,13 @@ function Img2img() {
         >
           <Label htmlFor="picture">Image prompt</Label>
           <Input id="picture" type="file" onChange={handleFileChange} />
+          <Label htmlFor="seed">Seed</Label>
+          <Input
+            id="seed"
+            type="text"
+            value={seed}
+            onChange={(e) => setSeed(e.target.value)}
+          />
           <Button type="submit" className="flex gap-2" disabled={loading}>
             Generate {loading && <LoadingIcon />}
           </Button>
@@ -244,6 +260,7 @@ const poses = {
 
 function OpenposeToImage() {
   const [prompt, setPrompt] = useState("");
+  const [seed, setSeed] = useState("");
   const [poseImageUrl, setPoseImageUrl] = useState(
     "https://pub-6230db03dc3a4861a9c3e55145ceda44.r2.dev/openpose-pose%20(1).png",
   );
@@ -293,7 +310,7 @@ function OpenposeToImage() {
 
             e.preventDefault();
             setLoading(true);
-            generate_img_with_controlnet(poseImageUrl, prompt).then((res) => {
+            generate_img_with_controlnet(poseImageUrl, prompt, seed).then((res) => {
               console.log("here", res);
               if (!res) {
                 setStatus("error");
@@ -306,13 +323,13 @@ function OpenposeToImage() {
           }}
         >
           <Select
-            defaultValue={"Arms on Hips"}
+            defaultValue={"arms_on_hips"}
             onValueChange={(value) => {
               handleSelectChange(value as keyof typeof poses);
               setPoseLoading(true); // Start loading when a new pose is selected
             }}
           >
-            <Label htmlFor="picture">Pose</Label>
+            <Label htmlFor="pose">Pose</Label>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a Pose" />
             </SelectTrigger>
@@ -327,12 +344,19 @@ function OpenposeToImage() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Label htmlFor="picture">Image prompt</Label>
+          <Label htmlFor="prompt">Image prompt</Label>
           <Input
-            id="picture"
+            id="prompt"
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+          />
+          <Label htmlFor="seed">Seed</Label>
+          <Input
+            id="seed"
+            type="text"
+            value={seed}
+            onChange={(e) => setSeed(e.target.value)}
           />
           <Button type="submit" className="flex gap-2" disabled={loading}>
             Generate {loading && <LoadingIcon />}

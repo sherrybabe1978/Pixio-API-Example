@@ -7,30 +7,33 @@ const client = new ComfyDeployClient({
     apiToken: process.env.COMFY_API_TOKEN!,
 })
 
-export async function generate(positive_prompt: string){
+export async function generate(positive_prompt: string, seed: string){
     return await client.run({
         deployment_id: process.env.COMFY_DEPLOYMENT_ID!,
         inputs: {
             "positive_prompt": positive_prompt,
+            "seed": seed,
         }
     })
 }
 
-export async function generate_img(input_image: string){
+export async function generate_img(input_image: string, seed: string){
     return await client.run({
         deployment_id: process.env.COMFY_DEPLOYMENT_ID_IMG_2_IMG!,
         inputs: {
-            "input_image": input_image
+            "input_image": input_image,
+            "seed": seed,
         }
     })
 }
 
-export async function generate_img_with_controlnet(input_openpose_url: string, prompt: string){
+export async function generate_img_with_controlnet(input_openpose_url: string, prompt: string, seed: string){
     return await client.run({
         deployment_id: process.env.COMFY_DEPLOYMENT_ID_CONTROLNET!,
         inputs: {
             "positive_prompt": prompt,
-            "openpose": input_openpose_url
+            "openpose": input_openpose_url,
+            "seed": seed,
         }
     })
 }
