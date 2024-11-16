@@ -54,20 +54,21 @@ export default function Page() {
 
 function Txt2img() {
   const [positivePrompt, setPositivePrompt] = useState("");
-  const [negativePrompt, setNegativePrompt] = useState("");
-  const [seed, setSeed] = useState("");
   const [loading, setLoading] = useState(false);
   const [runIds, setRunIds] = useState<string[]>([]);
+
+  // Function to generate a random 8-digit seed
+  const generateRandomSeed = () => {
+    return Math.floor(10000000 + Math.random() * 90000000).toString();
+  };
 
   return (
     <Card className="w-full max-w-[600px]">
       <CardHeader>
-       Pixio API Example App
+        Pixio API Example App
         <div className="text-xs text-foreground opacity-50">
           Our text2img demo -{" "}
-          <a href="https://myapps.ai">
-            start building today!
-          </a>
+          <a href="https://myapps.ai">start building today!</a>
         </div>
       </CardHeader>
       <CardContent>
@@ -79,48 +80,39 @@ function Txt2img() {
             if (loading) return;
             setLoading(true);
 
-            const promises = Array(1).fill(null).map(() => {
-              return generate(positivePrompt, seed)
-                .then((res) => {
-                  if (res) {
-                    setRunIds((ids) => [...ids, res.run_id]);
-                  }
-                  return res;
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            });
+            const newSeed = generateRandomSeed();
+
+            const promises = Array(1)
+              .fill(null)
+              .map(() => {
+                return generate(positivePrompt, newSeed)
+                  .then((res) => {
+                    if (res) {
+                      setRunIds((ids) => [...ids, res.run_id]);
+                    }
+                    return res;
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              });
 
             Promise.all(promises).finally(() => {
               setLoading(false);
             });
           }}
         >
-           <Label htmlFor="positive-prompt">Positive prompt</Label>
-            <Input
-              id="positive-prompt"
-              type="text"
-              value={positivePrompt}
-              onChange={(e) => setPositivePrompt(e.target.value)}
-            />
-            <Label htmlFor="negative-prompt">Negative prompt</Label>
-            <Input
-              id="negative-prompt"
-              type="text"
-              value={negativePrompt}
-              onChange={(e) => setNegativePrompt(e.target.value)}
-            />
-            <Label htmlFor="seed">Seed</Label>
-            <Input
-              id="seed"
-              type="text"
-              value={seed}
-              onChange={(e) => setSeed(e.target.value)}
-            />
-            <Button type="submit" className="flex gap-2" disabled={loading}>
-              Generate {loading && <LoadingIcon />}
-            </Button>
+          <Label htmlFor="positive-prompt">Positive prompt</Label>
+          <Input
+            id="positive-prompt"
+            type="text"
+            value={positivePrompt}
+            onChange={(e) => setPositivePrompt(e.target.value)}
+            required
+          />
+          <Button type="submit" className="flex gap-2" disabled={loading}>
+            Generate {loading && <LoadingIcon />}
+          </Button>
 
           <div className="grid grid-cols-2 gap-4">
             {runIds.map((runId, index) => (
@@ -135,7 +127,6 @@ function Txt2img() {
 
 function Img2img() {
   const [prompt, setPrompt] = useState<File>();
-  const [seed, setSeed] = useState("");
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const [runId, setRunId] = useState("");
@@ -144,6 +135,11 @@ function Img2img() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     setPrompt(e.target.files[0]);
+  };
+
+  // Function to generate a random 8-digit seed
+  const generateRandomSeed = () => {
+    return Math.floor(10000000 + Math.random() * 90000000).toString();
   };
 
   // Polling in frontend to check for the
@@ -180,6 +176,8 @@ function Img2img() {
 
             console.log(prompt?.type, prompt?.size);
 
+            const newSeed = generateRandomSeed();
+
             getUploadUrl(prompt?.type, prompt?.size).then((res) => {
               if (!res) return;
 
@@ -200,7 +198,7 @@ function Img2img() {
                   setStatus("uploaded input");
 
                   setLoading(true);
-                  generate_img(res.download_url, seed).then((res) => {
+                  generate_img(res.download_url, newSeed).then((res) => {
                     console.log(res);
                     if (!res) {
                       setStatus("error");
@@ -216,19 +214,23 @@ function Img2img() {
           }}
         >
           <Label htmlFor="picture">Image prompt</Label>
-          <Input id="picture" type="file" onChange={handleFileChange} />
-          <Label htmlFor="seed">Seed</Label>
           <Input
-            id="seed"
-            type="text"
-            value={seed}
-            onChange={(e) => setSeed(e.target.value)}
+            id="picture"
+            type="file"
+            onChange={handleFileChange}
+            required
           />
           <Button type="submit" className="flex gap-2" disabled={loading}>
             Generate {loading && <LoadingIcon />}
           </Button>
 
-          {runId && <ImageGenerationResult key={runId} runId={runId} className="aspect-square"/>}
+          {runId && (
+            <ImageGenerationResult
+              key={runId}
+              runId={runId}
+              className="aspect-square"
+            />
+          )}
         </form>
       </CardContent>
     </Card>
@@ -250,19 +252,18 @@ const poses = {
   },
   excited_jump: {
     url: "https://pub-6230db03dc3a4861a9c3e55145ceda44.r2.dev/openpose-pose%20(4).png",
-    name: "excited jump",
+    name: "Excited Jump",
   },
   pointing_to_the_stars: {
     url: "https://pub-6230db03dc3a4861a9c3e55145ceda44.r2.dev/openpose-pose%20(5).png",
-    name: "Pointing to the stars",
+    name: "Pointing to the Stars",
   },
 };
 
 function OpenposeToImage() {
   const [prompt, setPrompt] = useState("");
-  const [seed, setSeed] = useState("");
   const [poseImageUrl, setPoseImageUrl] = useState(
-    "https://pub-6230db03dc3a4861a9c3e55145ceda44.r2.dev/openpose-pose%20(1).png",
+    "https://pub-6230db03dc3a4861a9c3e55145ceda44.r2.dev/openpose-pose%20(1).png"
   );
   const [poseLoading, setPoseLoading] = useState(false);
   const [image, setImage] = useState("");
@@ -272,6 +273,11 @@ function OpenposeToImage() {
 
   const handleSelectChange = (value: keyof typeof poses) => {
     setPoseImageUrl(poses[value].url); // Update image based on selection
+  };
+
+  // Function to generate a random 8-digit seed
+  const generateRandomSeed = () => {
+    return Math.floor(10000000 + Math.random() * 90000000).toString();
   };
 
   // Polling in frontend to check for the
@@ -310,15 +316,18 @@ function OpenposeToImage() {
 
             e.preventDefault();
             setLoading(true);
-            generate_img_with_controlnet(poseImageUrl, prompt, seed).then((res) => {
-              console.log("here", res);
-              if (!res) {
-                setStatus("error");
-                setLoading(false);
-                return;
+            const newSeed = generateRandomSeed();
+            generate_img_with_controlnet(poseImageUrl, prompt, newSeed).then(
+              (res) => {
+                console.log("here", res);
+                if (!res) {
+                  setStatus("error");
+                  setLoading(false);
+                  return;
+                }
+                setRunId(res.run_id);
               }
-              setRunId(res.run_id);
-            });
+            );
             setStatus("preparing");
           }}
         >
@@ -350,13 +359,7 @@ function OpenposeToImage() {
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-          />
-          <Label htmlFor="seed">Seed</Label>
-          <Input
-            id="seed"
-            type="text"
-            value={seed}
-            onChange={(e) => setSeed(e.target.value)}
+            required
           />
           <Button type="submit" className="flex gap-2" disabled={loading}>
             Generate {loading && <LoadingIcon />}
@@ -385,7 +388,13 @@ function OpenposeToImage() {
               decorative
             /> */}
             <div className="w-full h-full">
-              {runId && <ImageGenerationResult key={runId} runId={runId} className="aspect-[768/1152]"/>}
+              {runId && (
+                <ImageGenerationResult
+                  key={runId}
+                  runId={runId}
+                  className="aspect-[768/1152]"
+                />
+              )}
             </div>
           </div>
         </form>
