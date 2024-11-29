@@ -30,7 +30,7 @@ import { ImageGenerationResult } from "@/components/ImageGenerationResult";
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between mt-10">
+    <main className="flex min-h-screen flex-col items-center justify-between mt-10 bg-black">
       <Tabs defaultValue="txt2img" className="w-full max-w-[600px]">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="txt2img">txt2img</TabsTrigger>
