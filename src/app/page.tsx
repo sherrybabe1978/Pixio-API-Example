@@ -3,8 +3,7 @@
 import { LoadingIcon } from "@/components/LoadingIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label"; //Removed Input import
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   checkStatus,
@@ -65,10 +64,12 @@ function Txt2img() {
   return (
     <Card className="w-full max-w-[600px]">
       <CardHeader>
-        Pixio API Example App
+        WHAT THE LLM IMAGE GENERATOR V1
         <div className="text-xs text-foreground opacity-50">
-          Our text2img demo -{" "}
-          <a href="https://myapps.ai">start building today!</a>
+          text2img -{" "}
+          <a href="https://myapps.ai">
+            create realistic images, anime, art and logos
+          </a>
         </div>
       </CardHeader>
       <CardContent>
@@ -103,12 +104,12 @@ function Txt2img() {
           }}
         >
           <Label htmlFor="positive-prompt">Positive prompt</Label>
-          <Input
+          <textarea
             id="positive-prompt"
-            type="text"
+            rows={4}
             value={positivePrompt}
             onChange={(e) => setPositivePrompt(e.target.value)}
-            required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Button type="submit" className="flex gap-2" disabled={loading}>
             Generate {loading && <LoadingIcon />}
@@ -214,7 +215,7 @@ function Img2img() {
           }}
         >
           <Label htmlFor="picture">Image prompt</Label>
-          <Input
+          <input
             id="picture"
             type="file"
             onChange={handleFileChange}
@@ -354,12 +355,12 @@ function OpenposeToImage() {
             </SelectContent>
           </Select>
           <Label htmlFor="prompt">Image prompt</Label>
-          <Input
+          <textarea
             id="prompt"
-            type="text"
+            rows={4}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            required
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Button type="submit" className="flex gap-2" disabled={loading}>
             Generate {loading && <LoadingIcon />}
