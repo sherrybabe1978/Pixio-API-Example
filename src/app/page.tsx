@@ -62,7 +62,7 @@ function Txt2img() {
   };
 
   return (
-    <Card  backgroundColor="black" className="w-full max-w-[600px]">
+    <Card className="w-full max-w-[600px]">
       <CardHeader>
         WHAT THE LLM IMAGE GENERATOR V1
         <div className="text-xs text-foreground opacity-50">
