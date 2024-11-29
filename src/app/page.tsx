@@ -62,13 +62,13 @@ function Txt2img() {
   };
 
   return (
-    <Card className="w-full max-w-[600px]">
+    <Card  backgroundColor="black" className="w-full max-w-[600px]">
       <CardHeader>
         WHAT THE LLM IMAGE GENERATOR V1
         <div className="text-xs text-foreground opacity-50">
           text2img -{" "}
           <a href="https://myapps.ai">
-            create realistic images, anime, art and logos
+            create realistic images, anime,logos & more
           </a>
         </div>
       </CardHeader>
